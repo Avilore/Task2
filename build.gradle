@@ -1,0 +1,67 @@
+plugins {
+  id("java-library")
+  id("application")
+  id("idea")
+}
+
+group "com.ciklum"
+version "1.0.0"
+
+def versions = [
+  java      : JavaVersion.VERSION_14.majorVersion,
+  faker     : "1.0.2",
+]
+
+application {
+  mainClassName = "${project.group}.Application" as String
+}
+
+tasks {
+  java {
+    toolchain {
+      languageVersion = JavaLanguageVersion.of(versions.java)
+    }
+  }
+  compileJava {
+    sourceCompatibility = versions.java
+    targetCompatibility = versions.java
+    options.fork = true
+    options.warnings = false
+    options.incremental = true
+    dependsOn tasks.getByName("processResources")
+  }
+  idea {
+    module {
+      outputDir project.buildDir
+      downloadJavadoc true
+      downloadSources true
+      inheritOutputDirs true
+      excludeDirs += files(".gradle", ".idea", "gradle")
+      generatedSourceDirs += files(
+        "${project.buildDir}/generated/sources/annotationProcessor/java/main",
+        "${project.buildDir}/generated/sources/annotationProcessor/java/test"
+      )
+    }
+  }
+}
+
+repositories {
+  mavenCentral()
+}
+
+configurations {
+  compileOnly {
+    extendsFrom annotationProcessor
+  }
+  testCompileOnly {
+    extendsFrom testAnnotationProcessor
+  }
+}
+
+dependencyLocking {
+  lockAllConfigurations()
+}
+
+dependencies {
+  implementation("com.github.javafaker:javafaker:$versions.faker")
+}

@@ -1,0 +1,11 @@
+pluginManagement {
+  repositories {
+    gradlePluginPortal()
+  }
+}
+buildCache {
+  local {
+    enabled true
+  }
+}
+rootProject.name = "Task2"
